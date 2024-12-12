@@ -46,9 +46,29 @@ namespace Orders.Infrastructure
             }
         }
 
-        public Task Update(UpdateOrder updateOrder)
+        public async Task Update(UpdateOrder updateOrder)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await OrdersDbContext.Orders.FindAsync(updateOrder.Id).ConfigureAwait(false);
+
+                if (order == null)
+                {
+                    throw new KeyNotFoundException($"Order with Id {updateOrder.Id} was not found.");
+                }
+
+                var newOrder = Mapper.Map<Order>(updateOrder.Order);
+                order.Items = newOrder.Items;
+                order.Total = newOrder.Total;
+                order.LastUpdatedDate = DateTime.Now;
+
+                OrdersDbContext.Orders.Update(order);
+                OrdersDbContext.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
         }
     }
 }

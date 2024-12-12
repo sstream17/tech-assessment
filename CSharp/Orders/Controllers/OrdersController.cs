@@ -46,5 +46,26 @@ namespace Orders.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPut("{orderId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int orderId, [FromBody] AddOrder order)
+        {
+            try
+            {
+                var updateOrder = new UpdateOrder
+                {
+                    Id = orderId,
+                    Order = order.Order,
+                };
+                await OrdersAccessor.Update(updateOrder).ConfigureAwait(false);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
 }
