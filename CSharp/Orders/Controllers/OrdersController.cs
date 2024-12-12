@@ -67,5 +67,21 @@ namespace Orders.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("customer/{customerId}")]
+        [ProducesResponseType(typeof(List<OrderBody>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByCustomerId(int customerId)
+        {
+            try
+            {
+                var orders = await OrdersAccessor.GetByCustomerId(customerId).ConfigureAwait(false);
+                return Ok(orders);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
     }
 }

@@ -14,5 +14,7 @@ namespace Orders.Infrastructure
         Task Update(UpdateOrder updateOrder);
 
         Task Cancel(int orderId);
+
+        Task<List<OrderBody>> GetByCustomerId(int customerId);
     }
 }

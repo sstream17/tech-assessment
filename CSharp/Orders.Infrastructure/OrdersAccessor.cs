@@ -1,5 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Security.Principal;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Orders.Core;
 using Orders.Core.Contracts;
 using Orders.Infrastructure.EntityFramework;
@@ -66,6 +68,29 @@ namespace Orders.Infrastructure
                 OrdersDbContext.SaveChanges();
             }
             catch (DbUpdateException)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<OrderBody>> GetByCustomerId(int customerId)
+        {
+            try
+            {
+                var customer = await OrdersDbContext.Customers.FindAsync(customerId).ConfigureAwait(false);
+
+                if (customer == null)
+                {
+                    throw new KeyNotFoundException($"Customer with Id {customerId} was not found.");
+                }
+
+                var orders = await OrdersDbContext
+                    .GetOrdersByCustomerId(customerId)
+                    .ConfigureAwait(false);
+
+                return Mapper.Map<List<OrderBody>>(orders);
+            }
+            catch (KeyNotFoundException)
             {
                 throw;
             }

@@ -16,6 +16,8 @@ namespace Orders.Infrastructure.EntityFramework
 
         DbSet<Item> Items { get; set; }
 
+        Task<List<Order>> GetOrdersByCustomerId(int customerId);
+
         int SaveChanges();
     }
 }
