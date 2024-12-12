@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Orders.Core;
 using Orders.Core.Contracts;
 using Orders.Infrastructure.EntityFramework;
 using Orders.Infrastructure.EntityFramework.Models;
@@ -25,9 +26,24 @@ namespace Orders.Infrastructure
             }
         }
 
-        public Task Cancel()
+        public async Task Cancel(int orderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await OrdersDbContext.Orders.FindAsync(orderId).ConfigureAwait(false);
+
+                if (order == null)
+                {
+                    throw new KeyNotFoundException($"Order with Id {orderId} was not found.");
+                }
+
+                order.Status = Status.Cancelled;
+                OrdersDbContext.SaveChanges();
+            }
+            catch (KeyNotFoundException)
+            {
+                throw;
+            }
         }
 
         public Task Update(UpdateOrder updateOrder)

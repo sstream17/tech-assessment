@@ -13,6 +13,6 @@ namespace Orders.Infrastructure
 
         Task Update(UpdateOrder updateOrder);
 
-        Task Cancel();
+        Task Cancel(int orderId);
     }
 }
