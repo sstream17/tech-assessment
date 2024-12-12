@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Orders.Core.Contracts;
+using Orders.Infrastructure;
 
 namespace Orders.Controllers
 {
@@ -6,28 +8,27 @@ namespace Orders.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
+        public OrdersController(IOrdersAccessor ordersAccessor)
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<OrdersController> _logger;
-
-        public OrdersController(ILogger<OrdersController> logger)
-        {
-            _logger = logger;
+            OrdersAccessor = ordersAccessor;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        private IOrdersAccessor OrdersAccessor { get; set; }
+
+        [HttpPost(Name = "add")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Add(AddOrder addOrder)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            try
             {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+                await OrdersAccessor.Add(addOrder).ConfigureAwait(false);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

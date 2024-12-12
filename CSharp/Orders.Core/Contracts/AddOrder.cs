@@ -8,5 +8,6 @@ namespace Orders.Core.Contracts
 {
     public class AddOrder
     {
+        public OrderBody Order { get; set; }
     }
 }

@@ -22,6 +22,5 @@ namespace Orders.Infrastructure.EntityFramework.Models
         public virtual ICollection<Item> Items { get; set; }
 
         public decimal Total { get; set; }
-
     }
 }
