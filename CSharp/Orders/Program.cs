@@ -1,4 +1,6 @@
 
+using Orders.Infrastructure.ServiceCollectionExtensions;
+
 namespace Orders
 {
     public class Program
@@ -13,6 +15,9 @@ namespace Orders
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Wire up DI
+            builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
             var app = builder.Build();
 

@@ -1,19 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Orders.Core.Contracts;
 using Orders.Infrastructure.EntityFramework;
+using Orders.Infrastructure.EntityFramework.Models;
 
 namespace Orders.Infrastructure
 {
-    public class OrdersAccessor(IOrdersDbContext ordersDbContext) : IOrdersAccessor
+    public class OrdersAccessor(IMapper mapper, IOrdersDbContext ordersDbContext) : IOrdersAccessor
     {
+        private IMapper Mapper { get; } = mapper;
+
         private IOrdersDbContext OrdersDbContext { get; } = ordersDbContext;
 
         public async Task Add(AddOrder addOrder)
         {
             try
             {
-                // TODO: map incoming order object to DB object
-                await OrdersDbContext.Orders.AddAsync(addOrder).ConfigureAwait(false);
+                var order = Mapper.Map<Order>(addOrder.Order);
+                await OrdersDbContext.Orders.AddAsync(order).ConfigureAwait(false);
             }
             catch (DbUpdateException)
             {

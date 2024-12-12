@@ -16,5 +16,13 @@ namespace Orders.Infrastructure.EntityFramework
 
         public virtual DbSet<Item> Items { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Order>()
+                .HasMany(e => e.Items)
+                .WithMany(e => e.Orders)
+                .UsingEntity<OrderItem>();
+        }
+
     }
 }
